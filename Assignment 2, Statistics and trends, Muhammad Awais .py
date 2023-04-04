@@ -37,3 +37,41 @@ def ingest_data(filename):
 
 
 # In[3]:
+
+
+# Let's read data
+filename = "API_19_DS2_en_csv_v2_4902199.csv"
+df_years, df_countries = ingest_data(filename)
+display(df_years.head())
+display(df_countries.head())
+
+
+# In[4]:
+
+
+def explore_data(df, indicators, countries):
+    """
+    Explore the statistical properties of the selected indicators
+    and countries, and return summary statistics.
+    """
+    # Filter dataset by selected countries
+    selected_data = df[df['Country Name'].isin(countries)]
+    
+    summaries = {}
+    for ind in indicators:
+        # Filter dataset by the current indicator
+        selected = selected_data[selected_data["Indicator Name"] == ind]
+        
+        # Drop unnecessary columns
+        selected.drop(["Country Code", "Indicator Name", "Indicator Code"], axis=1, inplace=True)
+        
+        # Set the index to 'Country Name', transpose the dataframe, and calculate summary statistics
+        summary = selected.set_index("Country Name").T.describe()
+        
+        # Add summary statistics for the current indicator to the summaries dictionary
+        summaries[ind] = summary
+
+    return summaries
+
+
+# In[5]:
