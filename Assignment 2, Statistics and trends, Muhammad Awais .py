@@ -94,3 +94,74 @@ summaries = explore_data(
 for ind, sumary in summaries.items():
     print(f"Statistical Characteristics of Selected Countries for Indicator {str(ind).upper()} are...")
     display(sumary)
+
+
+# In[6]:
+
+
+def visualize_data(df, indicator, countries, title):
+    """
+    Visualize the data using line plots for the selected indicators and countries.
+    """
+    # Filter dataset by selected countries
+    selected_data = df[df['Country Name'].isin(countries)]
+
+    # Filter dataset by selected indicator and set year as index
+    selected_data = selected_data[selected_data['Indicator Name'] == indicator]
+  
+    # Drop unnecessary columns
+    selected_data = selected_data.drop(['Country Code', 'Indicator Name', 'Indicator Code'], axis=1).set_index("Country Name").T
+    
+    
+    # Create line plot
+    plt.figure(figsize=(10, 6))
+    sns.lineplot(data=selected_data, dashes=False)
+    plt.title(title)
+    plt.ylabel(indicator)
+    plt.xlabel('Year')
+    plt.xticks(rotation=90)
+    plt.legend(countries)
+    plt.show()
+
+
+# In[7]:
+
+
+for indicator in indicators_of_interest:
+        visualize_data(df_years, indicator, countries_of_interest,
+                       f"{indicator} for selected countries")
+
+
+# In[8]:
+
+
+def visualize_relationship(df, ind_x, ind_y, countries):
+    """
+    Visualize the relationship between two indicators for the selected countries
+    using scatter plots with regression lines.
+    """
+    
+    # Create a figure and axes
+    plt.figure(figsize=(12, 5))
+    for i, country in enumerate(countries):
+        x = df[(df["Country Name"] == country) & (df_years["Indicator Name"] == ind_x)].iloc[:, 4:].T
+        y = df[(df["Country Name"] == country) & (df_years["Indicator Name"] == ind_y)].iloc[:, 4:].T
+        
+        x = np.array(x)
+        y = np.array(y)
+        
+        sns.regplot(x, y, label=country)
+    
+    plt.xlabel(f"{ind_x} (Scaled)")
+    plt.ylabel(f"{ind_y} (Scaled)")
+    plt.title(f"Correlation between {ind_x} and {ind_y}")
+    plt.legend()
+    plt.show()
+
+
+# In[9]:
+
+
+# Visualize the relationship between population growth and CO2 emissions
+visualize_relationship(df_years, "Population growth (annual %)", "CO2 emissions (metric tons per capita)", countries_of_interest)
+
