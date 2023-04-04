@@ -75,3 +75,22 @@ def explore_data(df, indicators, countries):
 
 
 # In[5]:
+
+
+# Define indicators and countries of interest
+indicators_of_interest = [
+    'Population growth (annual %)',
+    'CO2 emissions (metric tons per capita)',
+    'Energy use (kg of oil equivalent per capita)',
+    'Renewable energy consumption (% of total final energy consumption)'
+]
+countries_of_interest = [
+    'United States', 'China', 'India', 'Germany', 'Brazil']
+
+# Explore statistical properties of selected indicators and countries
+summaries = explore_data(
+    df_years, indicators_of_interest, countries_of_interest)
+
+for ind, sumary in summaries.items():
+    print(f"Statistical Characteristics of Selected Countries for Indicator {str(ind).upper()} are...")
+    display(sumary)
