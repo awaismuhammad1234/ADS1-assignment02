@@ -165,3 +165,71 @@ def visualize_relationship(df, ind_x, ind_y, countries):
 # Visualize the relationship between population growth and CO2 emissions
 visualize_relationship(df_years, "Population growth (annual %)", "CO2 emissions (metric tons per capita)", countries_of_interest)
 
+
+# In[10]:
+
+
+# Visualize the relationship between population growth and CO2 emissions
+visualize_relationship(df_years, "Population growth (annual %)", "Renewable energy consumption (% of total final energy consumption)", countries_of_interest)
+
+
+# In[11]:
+
+
+# Visualize the relationship between population growth and CO2 emissions
+visualize_relationship(df_years, "Population growth (annual %)", "Energy use (kg of oil equivalent per capita)", countries_of_interest)
+
+
+# In[12]:
+
+
+df = df_years[df_years['Country Name'].isin(countries_of_interest) & df_years['Indicator Name'].isin(indicators_of_interest)]
+
+# Pivot the data to make it suitable for the heatmap
+df_pivot = df.pivot(index='Country Name', columns='Indicator Name', values='2018')
+corr = df_pivot.corr()
+mask = np.triu(np.ones_like(corr, dtype=bool))
+
+# Create a heatmap of correlations between indicators
+sns.heatmap(corr, mask=mask, cmap='coolwarm', annot=True, fmt='.2f')
+plt.title('Correlations between Climate Indicators')
+plt.show()
+
+
+# Next I'm going to build some plots using plotly library and the limitation of this library is that the graphs that are made with this library are not constant means when the kernel will be stopped all of the floors will disappear.
+
+# In[13]:
+
+
+import plotly.graph_objs as go
+
+# Create a bubble chart of population, CO2 emissions, and GDP
+fig = go.Figure(data=go.Scatter(x=df['2018'], y=df['2019'], mode='markers',
+                                marker=dict(size=df['2017'].fillna(0)/100000000, sizemode='area', 
+                                            sizeref=0.1, color=df['2019'], colorscale='Viridis', showscale=True),
+                                text=df['Country Name']))
+
+fig.update_layout(title='Population, CO2 Emissions, and GDP by Country',
+                  xaxis_title='CO2 Emissions per Capita (metric tons)',
+                  yaxis_title='GDP per Capita (constant 2010 US$)')
+
+fig.show()
+
+
+# In[14]:
+
+
+import plotly.express as px
+
+# Select the required indicators and countries
+indicator = 'CO2 emissions (metric tons per capita)'
+df = df_years[df_years['Indicator Name'] == indicator]
+
+# Create a choropleth map of CO2 emissions
+fig = px.choropleth(df, locations='Country Code', color='2018', 
+                    title='CO2 Emissions per Capita by Country in 2018',
+                    color_continuous_scale=px.colors.sequential.Plasma)
+fig.show()
+
+
+# In[ ]:
